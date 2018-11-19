@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>JS + CSS Clock</title>
 </head>
+
 <body>
 
-
+  <section class="section">
     <div class="clock">
       <div class="clock-face">
         <div class="hand hour-hand"></div>
@@ -14,7 +16,12 @@
         <div class="hand second-hand"></div>
       </div>
     </div>
+    <div class="digital">
+      <div class="time">
 
+      </div>
+    </div>
+  </section>
 
   <style>
     html {
@@ -43,17 +50,41 @@
       position: relative;
       padding: 2rem;
       box-shadow:
-        0 0 0 4px rgba(0,0,0,0.1),
+        0 0 0 4px rgba(0, 0, 0, 0.1),
         inset 0 0 0 3px #EFEFEF,
         inset 0 0 10px black,
-        0 0 10px rgba(0,0,0,0.2);
+        0 0 10px rgba(0, 0, 0, 0.2);
+
     }
+
+    .section {
+      margin: auto;
+    }
+
+    .digital {
+      position: relative;
+      width: 25rem;
+      border: 20px solid white;
+      margin: 50px auto;
+      padding: 2rem;
+      box-shadow:
+        0 0 0 4px rgba(0, 0, 0, 0.1),
+        inset 0 0 0 3px #EFEFEF,
+        inset 0 0 10px black,
+        0 0 10px rgba(0, 0, 0, 0.2);
+      color: white;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+      font-size: 6rem;
+    }
+
+
 
     .clock-face {
       position: relative;
       width: 100%;
       height: 100%;
-      transform: translateY(-3px); /* account for the height of the clock hands */
+      transform: translateY(-3px);
+      /* account for the height of the clock hands */
     }
 
     .hand {
@@ -62,13 +93,86 @@
       background: black;
       position: absolute;
       top: 50%;
+      /* Move the pivot point to the far right of the line */
+      transform-origin: 100%;
+      /* Starting position for hands - 12 o'clock */
+      transform: rotate(90deg);
+      /* Smooth movement of hands moving */
+      transition: all 0.05s;
+      /* Add ease-in or ease-out movement (Current settings give snapping effect) */
+      transition-timing-function: cubic-bezier(.1, 2.7, .58, 1);
     }
 
+    .hour-hand {
+      height: 10px;
+
+    }
+
+    .second-hand {
+      height: 2px;
+      background-color: red;
+    }
+
+    .removeTransition {
+      transition: none;
+    }
   </style>
-
   <script>
+    const secondHand = document.querySelector('.second-hand');
+    const minHand = document.querySelector('.min-hand');
+    const hourHand = document.querySelector('.hour-hand');
+    const digitalClock = document.querySelector('.time');
+
+    function setDate() {
+      // Get new data object
+      const now = new Date();
+
+      // Get the curent second, minute, and hour
+      const seconds = now.getSeconds();
+      const minutes = now.getMinutes();
+      const hours = now.getHours();
 
 
+      // Calculate what degree each hand should be and add 90 to offset original 90deg setting in CSS that started the hand at 12:00
+      const secondsDegrees = ((seconds / 60) * 360) + 90;
+      const minutesDegrees = ((minutes / 60) * 360) + 90;
+      const hoursDegrees = ((hours / 12) * 360) + 90;
+
+
+      //Apply degrees to element by adding a new rotate transform
+
+      if (seconds != 59) {
+
+        secondHand.style.transform = `rotate(${secondsDegrees}deg)`;
+      } else {
+
+        // Add remove transition class so that second hand does not try and transition from 360 back to 0
+        secondHand.classList.add('removeTransition');
+        secondHand.style.transform = `rotate(${secondsDegrees}deg)`;
+        secondHand.classList.remove('removeTransition');
+
+      }
+
+      if (minutes != 59) {
+        minHand.style.transform = `rotate(${minutesDegrees}deg)`;
+      } else {
+
+        // Add remove transition class so that minute hand does not try and transition from 360 back to 0
+        minHand.classList.add('removeTransition');
+        minHand.style.transform = `rotate(${minutesDegrees}deg)`;
+        minHand.classList.remove('removeTransition');
+      }
+
+      hourHand.style.transform = `rotate(${hoursDegrees}deg)`;
+
+      //Update digital clock.  Pad minutes and seconds with leading zero
+      digitalClock.innerHTML = hours + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2,
+        "0");
+
+    }
+
+    setInterval(setDate, 1000);
   </script>
 </body>
+
 </html>
