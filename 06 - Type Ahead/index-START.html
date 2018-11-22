@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Type Ahead 👀</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <form class="search-form">
@@ -14,9 +16,70 @@
       <li>or a state</li>
     </ul>
   </form>
-<script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+  <script>
+    const endpoint =
+      'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 
-</script>
-  </body>
+    const cities = [];
+
+    //Fetch returns a promise to the data blob.  Then call the json function of the blob (another promise) to return data in json format.  Data must then be spread (...) into the cities array with the push method
+    fetch(endpoint)
+      .then(blob => blob.json())
+      .then(data => cities.push(...data));
+
+    function findMatches(wordToMatch, cities) {
+      return cities.filter(place => {
+
+        //Add the typed in word to a regular expression variable with the 'g' global and the 'i' insensitive switches
+        const regex = new RegExp(wordToMatch, 'gi');
+        return place.city.match(regex) || place.state.match(regex)
+      })
+    }
+
+    //Add proper commas to any numbers
+    function numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+
+    //Function to display the matches in the list element
+    function displayMatches() {
+      //Run the findMatches functions sending in the typed value and the cities array
+      const matchArray = findMatches(this.value, cities);
+
+      //Build out the html by iterating through each item in array (using the map fuction) and constructing each list item html code.  Then use the join function to turn the array into a string
+      const html = matchArray.map(place => {
+
+        //Highlighting feature
+        //Search for typed expression within results using regular expression and replaced the matching text with the same text but surrounded by the span tags with the class of hl
+        const regex = new RegExp(this.value, 'gi');
+        //City
+        const cityName = place.city.replace(regex, `<span class="hl">${this.value}</span>`);
+        //State
+        const stateName = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
+
+
+        return `
+          <li>
+            <span class="name">${cityName}, ${stateName}</span>
+            <span class="population">${numberWithCommas(place.population)}</span>
+          </li>
+          `;
+      }).join('');
+      console.log(html);
+
+      //Add construsted html into ul element to create each list item
+      suggestions.innerHTML = html;
+    }
+
+    //Grab HTML elements - input and the ul for the list to diplay results
+    const searchInput = document.querySelector('.search');
+    const suggestions = document.querySelector('.suggestions');
+
+    //Setup event listners on the input to trigger displayMatches on change and keyup
+    searchInput.addEventListener('change', displayMatches);
+    searchInput.addEventListener('keyup', displayMatches);
+  </script>
+</body>
+
 </html>
