@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Console Tricks!</title>
 </head>
+
 <body>
 
   <p onClick="makeGreen()">×BREAK×DOWN×</p>
 
   <script>
-    const dogs = [{ name: 'Snickers', age: 2 }, { name: 'hugo', age: 8 }];
+    const dogs = [{
+      name: 'Snickers',
+      age: 2
+    }, {
+      name: 'hugo',
+      age: 8
+    }];
 
     function makeGreen() {
       const p = document.querySelector('p');
@@ -30,7 +38,7 @@
     console.warn('OH NOOO');
 
     // Error :|
-    console.error('Shit!');
+    console.error('Doh!');
 
     // Info
     console.info('Crocodiles eat 3-4 people per year');
@@ -41,13 +49,13 @@
     console.assert(p.classList.contains('ouch'), 'That is wrong!');
 
     // clearing
-    console.clear();
+    //console.clear();
 
     // Viewing DOM Elements
     console.log(p);
     console.dir(p);
 
-    console.clear();
+    //console.clear();
 
     // Grouping together
     dogs.forEach(dog => {
@@ -83,7 +91,7 @@
       });
 
     console.table(dogs);
-
   </script>
 </body>
+
 </html>
